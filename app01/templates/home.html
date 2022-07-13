@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .message{
+            height: 300px;
+            width: 60%;
+            border: 1px solid #dddddd;
+        };
+
+    </style>
+</head>
+<body>
+<div class="message" id="message"></div>
+<div>
+    <input type="text" placeholder="请输入" id="txt">
+    <input type="button" value="发送" onclick="sendMessage()">
+</div>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js?ver=3.4.2"></script>
+<script>
+    function sendMessage(){
+        var text = $("#txt").val();
+        $.ajax({
+            url:'/send/msg/',
+            type:'GET',
+            data:{
+                text: text
+            },
+            success:function(res){
+                console.log("请求发送成功", res)
+            }
+        })
+    }
+
+    max_index = 0;
+    // 间隔2秒向后台发送请求获取数据并展示在界面上
+    setInterval(function(){
+        // 发送请求获取数据
+        $.ajax({
+            url: '/get/msg/',
+            data:{
+                index:max_index
+            },
+            type: 'GET',
+            success:function(dataDict){
+                max_index = dataDict.max_index;
+                $.each(dataDict.data,function(index,item){
+                    console.log(index,item);
+                    //  将内容拼接成div标签，并添加到message区域
+                    var tag = $("<div>");
+                    tag.text(item)
+                    $("#message").append(tag);
+
+                })
+            }
+        })
+    },2000)
+</script>
+</body>
+</html>
